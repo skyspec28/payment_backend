@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI ,HTTPException
 from pydantic import BaseModel
 from fastapi.params import Body
@@ -6,7 +7,22 @@ from psycopg2.extras import RealDictCursor
 import time
 from fastapi import status
 
-app = FastAPI()
+from .models import SessionDep, create_db_and_tables
+
+
+
+
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Creating database tables...")
+    create_db_and_tables()
+    yield  # This allows the app to run
+    print("Shutting down...")
+
+app = FastAPI(lifespan=lifespan)
 
 class Post(BaseModel):
     title: str
@@ -27,11 +43,6 @@ while True:
 
 
 
-def find_post(id):
-    for p in my_post:
-        if p["id"] == id:
-            return p
-        
 
 @app.get("/")
 def read_root():
@@ -45,7 +56,7 @@ def get_posts():
    return {"data":posts}
 
 @app.post("/posts",status_code=status.HTTP_201_CREATED)
-def create_post(post:Post):
+def create_post(post:Post , session: SessionDep):
     cursor.execute("""INSERT INTO posts(title, content, published) VALUES(%s , %s , %s) RETURNING * """ , (post.title , post.content , post.published))
     new_post=cursor.fetchone()
     conn.commit()

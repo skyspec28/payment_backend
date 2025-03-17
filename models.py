@@ -1,24 +1,19 @@
-from typing import Annotated
-from sqlmodel import Field, Session, SQLModel
-from .database import engine
-from fastapi import Depends
+from sqlalchemy import TIMESTAMP, Column,String ,ForeignKey,Integer ,Boolean, text
+from .database import Base
 
+class Post(Base):
+   __tablename__ ="posts"
+   id = Column(Integer ,primary_key=True ,nullable= False)
+   title= Column(String , nullable=False)
+   content= Column(String , nullable=False)
+   published= Column(Boolean, nullable=False)
 
-class Post(SQLModel, table=True):
-    id :int =Field(default=None ,primary_key=True ,nullable=False)
-    title:str =Field(index=True ,nullable= False)
-    content: str = Field(nullable=False) 
-    is_published:bool=Field(default=True)
+    
+class User(Base):
+   __tablename__ ="users"
+   id = Column(Integer ,primary_key=True ,nullable= False)
+   email=Column(String , nullable=False ,unique=True)
+   password=Column(String ,nullable=False)
+   created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+   
 
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
-SessionDep = Annotated[Session, Depends(get_session)]

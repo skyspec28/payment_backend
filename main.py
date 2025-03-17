@@ -5,7 +5,7 @@ from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
 from fastapi import status
-from . import models 
+from . import models ,schemas
 from .schemas import PostBase ,PostCreate ,Post
 from .database import engine ,SessionLocal
 
@@ -97,3 +97,13 @@ def update_post(id: int, post:PostCreate,db:Session=Depends(get_db)):
     db.commit()
     db.refresh(existing_post)
     return  post
+
+
+@app.post("/user",status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
+def users(users:schemas.UserCreate,db:Session=Depends(get_db) ):
+        
+    new_user = models.User(**users.model_dump()) 
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user

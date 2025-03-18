@@ -15,4 +15,12 @@ class Post(PostBase):
 
 class UserCreate(BaseModel):
     email:EmailStr
-    password= str
+    password: str
+
+class UserResponse(BaseModel):
+    email:EmailStr
+    id:int
+
+class LoginUser(BaseModel):
+    email:EmailStr
+    password: str

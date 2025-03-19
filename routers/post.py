@@ -1,5 +1,5 @@
 
-from .. import models
+from .. import models ,oauth2
 from .. main import get_db
 from ..schemas import PostBase ,PostCreate ,Post
 from sqlalchemy.orm import Session
@@ -17,12 +17,12 @@ def get_posts(db:Session = Depends(get_db)):
    return posts
 
 
-@router.post("/posts",status_code=status.HTTP_201_CREATED ,response_model=Post)
-def create_post(post:PostBase ,db:Session = Depends(get_db)):
+@router.post("/posts",status_code=status.HTTP_201_CREATED)
+def create_post(post:PostBase ,db:Session = Depends(get_db),  user_id:int =Depends(oauth2.get_current_user)):
     # cursor.execute("""INSERT INTO posts(title, content, published) VALUES(%s , %s , %s) RETURNING * """ , (post.title , post.content , post.published))
     # new_post=cursor.fetchone()
     # conn.commit()
-    
+    print(user_id)
     new_post = models.Post(**post.model_dump()) 
     db.add(new_post)
     db.commit()
@@ -30,7 +30,7 @@ def create_post(post:PostBase ,db:Session = Depends(get_db)):
     return new_post
 
 @router.get("/posts/{id}",response_model=Post)
-def get_post(id:int ,db:Session = Depends(get_db)):
+def get_post(id:int ,db:Session = Depends(get_db),user_id:int =Depends(oauth2.get_current_user)):
     # get_by_id=db.get(models.Post, id)
     get_by_id=db.query(models.Post).filter(models.Post.id == id).first()
     if not get_by_id:

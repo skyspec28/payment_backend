@@ -1,7 +1,7 @@
 
 from .. import models ,schemas ,utils
 from sqlalchemy.orm import Session
-from fastapi import FastAPI ,HTTPException ,Depends,status ,APIRouter
+from fastapi import HTTPException ,Depends,status ,APIRouter
 from ..database import get_db
 
 router=APIRouter(

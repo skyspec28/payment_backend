@@ -5,7 +5,9 @@ from .. import models ,database ,utils ,oauth2 ,schemas
 
 
 
-router=APIRouter()
+router=APIRouter(
+    tags=["Login"]
+)
 
 
 @router.post("/login",response_model=schemas.Token)

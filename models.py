@@ -9,6 +9,7 @@ class Post(Base):
    content= Column(String , nullable=False)
    published= Column(Boolean, nullable=False)
    owner_id=Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+   created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
    owner= relationship("User")
 
     

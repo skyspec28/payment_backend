@@ -5,10 +5,6 @@ from .. import models,schemas,utils,oauth2
 from app.database import get_db
 router=APIRouter(tags=["Votes"])
 
-from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy.orm import Session
-from .. import models, schemas, utils, oauth2
-from app.database import get_db
 
 router = APIRouter(tags=["Votes"])
 

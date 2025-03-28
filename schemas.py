@@ -8,6 +8,7 @@ class PostBase(BaseModel):
     title: str
     content: str
     published: bool = True
+    created_at: datetime
 
 class PostCreate(PostBase):
     pass
@@ -23,6 +24,13 @@ class Post(PostBase):
     id:int
     owner_id:int
     owner:UserResponse
+
+    class Config:
+        from_attributes = True
+
+class PostOut(BaseModel):
+    post:Post
+    vote:int
 
     class Config:
         from_attributes = True

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 
 # Load the .env file manually
-load_dotenv()
+load_dotenv(override=True)
 
 class Settings(BaseSettings):
     database_hostname: str = os.getenv("DATABASE_HOSTNAME")
@@ -17,4 +17,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-
+print(f"✅ Using database at {settings.database_hostname}:{settings.database_port}")

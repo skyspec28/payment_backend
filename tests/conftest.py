@@ -12,6 +12,8 @@ from app.database import Base
 from app.main import app
 from app.database import get_db
 from app.config import settings
+from app.oauth2 import create_access_token
+from app import models
 
 # Database URL for testing
 SQLALCHEMY_DATABASE_URL = (
@@ -44,3 +46,63 @@ def client(session):
             session.close()
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
+
+
+
+@pytest.fixture()
+def login_persist(client):
+    res = client.post("/user/", json={"email": "test@mail.com", "password": "12345"})
+    assert res.status_code == 201
+    new_user=res.json()
+    
+    return new_user
+
+
+
+
+@pytest.fixture()
+def token(login_persist):
+    return create_access_token(data={"user_id":login_persist["id"]})
+
+@pytest.fixture()
+def auhtorized_client(client, token):
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {token}"
+    }
+    return client
+
+@pytest.fixture()
+def populated_post(login_persist, session):
+    posts_data = [
+        {
+            "title": "First Test Post",
+            "content": "This is the first test post content",
+            "owner_id": login_persist["id"],
+            "published": True,
+            "created_at": "2024-01-01T00:00:00"
+        },
+        {
+            "title": "Second Test Post",
+            "content": "This is the second test post content",
+            "owner_id": login_persist["id"],
+            "published": True,
+            "created_at": "2024-01-02T00:00:00"
+        },
+        {
+            "title": "Third Test Post",
+            "content": "This is the third test post content",
+            "owner_id": login_persist["id"],
+            "published": False,
+            "created_at": "2024-01-03T00:00:00"
+        }
+    ]
+
+    # def create_post_model(post):
+    #     return models.Post(**post)
+
+    # posts = list(map(create_post_model, posts_data))
+    # session.add_all(posts)
+    # session.commit()
+    
+    # return session.query(models.Post).all()

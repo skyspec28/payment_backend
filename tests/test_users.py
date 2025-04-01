@@ -6,13 +6,6 @@ from jose import jwt
 
 
 
-@pytest.fixture()
-def login_persist(client):
-    user = client.post("/user/", json={"email": "test@mail.com", "password": "12345"})
-    assert user.status_code == 201
-
-
-
 
 
 def test_read_root(client,session):
